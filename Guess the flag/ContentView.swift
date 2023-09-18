@@ -11,6 +11,8 @@ struct ContentView: View {
     @State private var showingScore = false
     @State private var scoreTitle = ""
     @State private var score = 0
+    @State private var userSelection = 0
+    @State private var attempts = 0 
     
     @State private var countries = ["Estonia", "France", "Germany", "Ireland" , "Italy", "Nigeria", "Poland", "Russia", "Spain", "UK", "US"].shuffled()
     
@@ -64,10 +66,17 @@ struct ContentView: View {
                         Spacer()
                       //  Spacer()
                         
-                        Text("Your score is \(score)")
-                            .foregroundColor(.white)
-                            .font(.body.bold())
-                        
+                        VStack (spacing: 14) {
+                            Text("Your score is \(score)")
+                                .foregroundColor(.white)
+                                .font(.body.bold())
+                            
+                            
+                            Text("Attempts: \(attempts)/8")
+                                .foregroundColor(.white)
+                                .font(.body.bold())
+                        }
+                            
                         Spacer()
                     }
                     .padding()
@@ -76,27 +85,39 @@ struct ContentView: View {
             .edgesIgnoringSafeArea(.all)
             
             .alert(scoreTitle, isPresented: $showingScore) {
-                Button ("Continue", action: askQuestion)
+                Button (attempts != 8 ? "Continue" : "Restart",
+                        action: attempts != 8 ? askQuestion : reset)
+              
+               
             } message: {
-                Text ("Your score is \(score)")
+                Text ("Your score is \(score)/8")
             }
     }
     
     //function
     func flagTapped (_ number : Int) {
-        if number == correctAnswer {
-            scoreTitle = "Correct"
-            score += 1
-        } else {
-            scoreTitle = "Wrong"
-        }
+        userSelection = number
+            if number == correctAnswer {
+                scoreTitle = attempts != 7 ? "Correct" : "🚀 GAME OVER"
+                score += 1
+                attempts += 1
+            } else {
+                scoreTitle = attempts != 7 ? "Wrong, that's the flag of \(countries[number])" : "🚀 GAME OVER"
+                attempts += 1
+            }
         
+            
         showingScore = true
     }
     
     func askQuestion() {
         countries.shuffle()
         correctAnswer = Int.random(in: 0...2)
+    }
+    
+    func reset() {
+        score = 0
+        attempts = 0
     }
 }
 
