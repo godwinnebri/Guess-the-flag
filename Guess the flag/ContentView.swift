@@ -28,6 +28,8 @@ struct ContentView: View {
     @State private var countries = ["Estonia", "France", "Germany", "Ireland" , "Italy", "Nigeria", "Poland", "Russia", "Spain", "UK", "US"].shuffled()
     
     @State private var correctAnswer = Int.random(in: 0...2)
+    
+    @State private var yAxis = 0.0
        
         var body: some View {
             GeometryReader{ geometry in
@@ -63,6 +65,8 @@ struct ContentView: View {
                                 } label: {
                                     FlagImage(country: countries[number])
                                 }
+                                .rotation3DEffect(.degrees(number == userSelection ? yAxis : 0), axis: (x: 0, y: 1, z: 0))
+
                             }
                             
                         }
@@ -114,7 +118,9 @@ struct ContentView: View {
                 attempts += 1
             }
         
-            
+        withAnimation{
+            yAxis += 360.0
+        }
         showingScore = true
     }
     
